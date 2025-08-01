@@ -1,0 +1,18 @@
+[build]
+  publish = "frontend/dist" # Path to your React build output, assuming project structure: Your_Main_Project_Folder/frontend/dist
+  command = "npm run build" # Command to build your React app
+
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/main/:splat"
+  status = 200
+
+[functions]
+  directory = "backend/netlify_functions" # Path to your functions folder relative to the main project folder
+  python_version = "3.11" # Or your Python version (e.g., "3.11", "3.12")
+  node_bundler = "esbuild" # Recommended for faster builds
+  included_files = [
+    "src/data/articles/*.md",
+    "src/data/blog/*.md",
+    "src/data/books/*.md"
+  ]
