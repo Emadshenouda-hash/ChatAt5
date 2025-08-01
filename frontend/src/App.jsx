@@ -460,7 +460,7 @@ function HomePage({ t }) {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="relative bg-divine-gradient py-20 lg:py-32 overflow-hidden">
+      <section className="relative bg-divine-gradient py-12 lg:py-20 overflow-hidden">
         {/* Background Image with Parallax Effect */}
         <div className="absolute inset-0 z-0">
           <img
@@ -481,7 +481,7 @@ function HomePage({ t }) {
 
         <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
           <div className="animate-fade-in-up">
-            <h1 className="text-5xl md:text-7xl font-bold mb-6 font-hero leading-tight">
+            <h1 className="text-3xl md:text-5xl font-bold mb-4 font-hero leading-tight">
               <span className="text-spiritual-gradient animate-typewriter inline-block">
                 {t.title}
               </span>
