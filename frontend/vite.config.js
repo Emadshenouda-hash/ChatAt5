@@ -1,10 +1,12 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
-import markdown from "vite-plugin-md";
+import path from "path";
 
 export default defineConfig({
-  plugins: [
-    react(),
-    markdown(), // 👈 allows Vite to handle .md files
-  ],
+  plugins: [react()],
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "./src"),
+    },
+  },
 });
