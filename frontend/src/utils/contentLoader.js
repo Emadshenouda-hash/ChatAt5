@@ -1,6 +1,4 @@
 import matter from "gray-matter";
-import { remark } from "remark";
-import html from "remark-html";
 
 // Fallback static JSON (for blog + books)
 import staticBlog from "../data/blog.json";
