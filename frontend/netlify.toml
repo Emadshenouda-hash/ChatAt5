@@ -11,7 +11,10 @@
 [functions]
   directory = "netlify/functions"
   node_bundler = "esbuild"
+
+[functions."*"]
   included_files = [
     "src/data/articles/*.md",
     "src/data/blog/*.md",
     "src/data/books/*.md"
+  ]
