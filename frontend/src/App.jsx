@@ -7,7 +7,7 @@ import {
   useNavigate,
   Link,
 } from "react-router-dom";
-import { Button } from "@/components/ui/button.jsx";
+import Button from "./components/ui/button.jsx"; // if App.jsx is in src/
 import {
   BookOpen,
   FileText,
