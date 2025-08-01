@@ -1,0 +1,8 @@
+{
+  "devDependencies": {
+    "gray-matter": "^4.0.3",
+    "remark": "^15.0.1",
+    "remark-html": "^16.0.1",
+    "vite-plugin-md": "^0.21.5"
+  }
+}

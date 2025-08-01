@@ -1,4 +1,14 @@
-echo node_modules/ > .gitignore
-echo .env >> .gitignore
-echo client/node_modules/ >> .gitignore
-echo server/node_modules/ >> .gitignore
+# Ignore dependencies
+node_modules/
+
+# Build output
+dist/
+
+# Environment files
+.env
+
+# System files
+.DS_Store
+
+# Vite cache
+.vite/

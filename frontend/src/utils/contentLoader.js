@@ -1,91 +1,86 @@
-import matter from 'gray-matter'
-import { remark } from 'remark'
-import html from 'remark-html'
+import matter from "gray-matter";
+import { remark } from "remark";
+import html from "remark-html";
 
-// Import static fallback data
-import staticArticles from '../data/articles.json'
-import staticBlog from '../data/blog.json'
-import staticBooks from '../data/books.json'
+// Fallback static JSON (for blog + books)
+import staticBlog from "../data/blog.json";
+import staticBooks from "../data/books.json";
 
-// Function to process markdown content (only used for static fallback)
-async function processMarkdown(content) {
-  const result = await remark().use(html).process(content)
-  return result.toString()
+// ✅ LOAD ARTICLES from Markdown
+export function loadArticles() {
+  const files = import.meta.glob("/src/data/articles/*.md", {
+    as: "raw",
+    eager: true,
+  });
+
+  return Object.entries(files)
+    .map(([path, raw]) => {
+      const { data: metadata } = matter(raw);
+      const slug = path.split("/").pop().replace(".md", "");
+
+      return {
+        id: slug,
+        title: {
+          en: metadata.language === "en" ? metadata.title : "",
+          ar: metadata.language === "ar" ? metadata.title : "",
+        },
+        excerpt: {
+          en: metadata.language === "en" ? metadata.excerpt : "",
+          ar: metadata.language === "ar" ? metadata.excerpt : "",
+        },
+        date: metadata.date,
+        author: metadata.author,
+        image: metadata.image,
+        language: metadata.language,
+        category: metadata.category,
+        tags: metadata.tags,
+      };
+    })
+    .sort((a, b) => new Date(b.date) - new Date(a.date));
 }
 
-// Helper function to generate ID from file path (only used for static fallback)
-function generateIdFromPath(path) {
-  const filename = path.split('/').pop().replace('.md', '')
-  let hash = 0
-  for (let i = 0; i < filename.length; i++) {
-    const char = filename.charCodeAt(i)
-    hash = ((hash << 5) - hash) + char
-    hash = hash & hash // Convert to 32-bit integer
-  }
-  return Math.abs(hash)
-}
-
-// Function to load articles
-export async function loadArticles() {
-  try {
-    const response = await fetch('/.netlify/functions/get-content?type=articles')
-    if (response.ok) {
-      const articles = await response.json()
-      return articles
-    }
-  } catch (error) {
-    console.warn('Failed to fetch articles from Netlify function:', error)
-  }
-  // Fallback to static data if Netlify function fails or is not available
-  return staticArticles
-}
-
-// Function to load blog posts
+// ✅ LOAD BLOG POSTS (fallback)
 export async function loadBlogPosts() {
   try {
-    const response = await fetch('/.netlify/functions/get-content?type=blog')
+    const response = await fetch("/.netlify/functions/get-content?type=blog");
     if (response.ok) {
-      const blogPosts = await response.json()
-      return blogPosts
+      const blogPosts = await response.json();
+      return blogPosts;
     }
   } catch (error) {
-    console.warn('Failed to fetch blog posts from Netlify function:', error)
+    console.warn("Failed to fetch blog posts from Netlify function:", error);
   }
-  // Fallback to static data if Netlify function fails or is not available
-  return staticBlog
+  return staticBlog;
 }
 
-// Function to load books
+// ✅ LOAD BOOKS (fallback)
 export async function loadBooks() {
   try {
-    const response = await fetch('/.netlify/functions/get-content?type=books')
+    const response = await fetch("/.netlify/functions/get-content?type=books");
     if (response.ok) {
-      const books = await response.json()
-      return books
+      const books = await response.json();
+      return books;
     }
   } catch (error) {
-    console.warn('Failed to fetch books from Netlify function:', error)
+    console.warn("Failed to fetch books from Netlify function:", error);
   }
-  // Fallback to static data if Netlify function fails or is not available
-  return staticBooks
+  return staticBooks;
 }
 
-// Function to get a single article by ID
-export async function getArticleById(id) {
-  const articles = await loadArticles()
-  return articles.find(article => article.id === parseInt(id))
+// ✅ GET SINGLE ARTICLE BY ID
+export function getArticleById(id) {
+  const articles = loadArticles();
+  return articles.find((article) => article.id === id);
 }
 
-// Function to get a single blog post by ID
+// ✅ GET SINGLE BLOG POST BY ID
 export async function getBlogPostById(id) {
-  const blogPosts = await loadBlogPosts()
-  return blogPosts.find(post => post.id === parseInt(id))
+  const blogPosts = await loadBlogPosts();
+  return blogPosts.find((post) => post.id === parseInt(id));
 }
 
-// Function to get a single book by ID
+// ✅ GET SINGLE BOOK BY ID
 export async function getBookById(id) {
-  const books = await loadBooks()
-  return books.find(book => book.id === parseInt(id))
+  const books = await loadBooks();
+  return books.find((book) => book.id === parseInt(id));
 }
-
-
