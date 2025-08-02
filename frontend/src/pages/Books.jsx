@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext } from "react";
 import { LanguageContext } from "@/App";
-import { loadBooks } from "@/lib/contentLoader";
+import { loadBooks } from "@/utils/contentLoader";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 

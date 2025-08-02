@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { LanguageContext } from "@/App";
 import { loadArticles } from "@/utils/contentLoader";
 import { Link } from "react-router-dom";
@@ -6,7 +6,21 @@ import { Button } from "@/components/ui/button";
 
 const Articles = () => {
   const { language, t } = useContext(LanguageContext);
-  const articles = loadArticles();
+  const [articles, setArticles] = useState([]);
+
+  useEffect(() => {
+    async function fetchArticles() {
+      try {
+        const all = await loadArticles();
+        setArticles(all);
+      } catch (err) {
+        console.error("Failed to load articles:", err);
+        setArticles([]);
+      }
+    }
+    fetchArticles();
+  }, []);
+
   const filtered = articles.filter((a) => a.language === language);
 
   return (
@@ -22,7 +36,7 @@ const Articles = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {filtered.map((article) => (
               <div
-                key={article.id}
+                key={article.slug}
                 className="border border-gray-200 p-4 rounded shadow-md"
               >
                 <h2 className="text-2xl font-semibold text-sky-teal font-heading">
@@ -35,7 +49,7 @@ const Articles = () => {
                   {article.excerpt?.[language] ||
                     article.content?.slice(0, 120)}
                 </p>
-                <Link to={`/articles/${article.id}`}>
+                <Link to={`/articles/${article.slug}`}>
                   <Button className="bg-serene-blue text-white hover:bg-deep-plum font-primary">
                     {language === "en" ? "Read More" : "اقرأ المزيد"}
                   </Button>
