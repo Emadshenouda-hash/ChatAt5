@@ -3,7 +3,7 @@ import react from "@vitejs/plugin-react";
 import path from "path";
 
 export default defineConfig({
-  base: "./", // ✅ THIS LINE is critical
+  base: "/", // ✅ use this instead of './'
   plugins: [react()],
   assetsInclude: ["**/*.md"],
   resolve: {
