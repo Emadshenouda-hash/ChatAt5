@@ -1,84 +1,106 @@
 import matter from "gray-matter";
+import { remark } from "remark";
+import html from "remark-html";
 
-// Fallback static JSON (for blog + books)
+// Static fallback JSON (used if Netlify Functions fail)
+import staticArticles from "../data/articles.json";
 import staticBlog from "../data/blog.json";
 import staticBooks from "../data/books.json";
 
-// ✅ LOAD ARTICLES from Markdown
-export function loadArticles() {
-  const files = import.meta.glob("/src/data/articles/*.md", {
-    as: "raw",
-    eager: true,
-  });
+// ✅ Corrected glob path: this will now work in production
+const articleFiles = import.meta.glob("../data/articles/*.md", {
+  as: "raw",
+  eager: true,
+});
 
-  return Object.entries(files)
-    .map(([path, raw]) => {
-      const { data: metadata } = matter(raw);
-      const slug = path.split("/").pop().replace(".md", "");
+const blogFiles = import.meta.glob("../data/blog/*.md", {
+  as: "raw",
+  eager: true,
+});
 
-      return {
-        id: slug,
-        title: {
-          en: metadata.language === "en" ? metadata.title : "",
-          ar: metadata.language === "ar" ? metadata.title : "",
-        },
-        excerpt: {
-          en: metadata.language === "en" ? metadata.excerpt : "",
-          ar: metadata.language === "ar" ? metadata.excerpt : "",
-        },
-        date: metadata.date,
-        author: metadata.author,
-        image: metadata.image,
-        language: metadata.language,
-        category: metadata.category,
-        tags: metadata.tags,
-      };
-    })
-    .sort((a, b) => new Date(b.date) - new Date(a.date));
+const bookFiles = import.meta.glob("../data/books/*.md", {
+  as: "raw",
+  eager: true,
+});
+
+function generateIdFromPath(path) {
+  const filename = path.split("/").pop().replace(".md", "");
+  let hash = 0;
+  for (let i = 0; i < filename.length; i++) {
+    const char = filename.charCodeAt(i);
+    hash = (hash << 5) - hash + char;
+    hash |= 0; // Convert to 32bit integer
+  }
+  return Math.abs(hash);
 }
 
-// ✅ LOAD BLOG POSTS (fallback)
+// Parse markdown frontmatter + body
+function parseMarkdown(fileContent, path) {
+  const { data, content } = matter(fileContent);
+  return {
+    id: generateIdFromPath(path),
+    ...data,
+    content,
+  };
+}
+
+// Articles
+export async function loadArticles() {
+  try {
+    const articles = Object.entries(articleFiles).map(([path, fileContent]) =>
+      parseMarkdown(fileContent, path)
+    );
+    return articles;
+  } catch (err) {
+    console.warn(
+      "Failed to load markdown articles. Using static fallback.",
+      err
+    );
+    return staticArticles;
+  }
+}
+
+// Blog Posts
 export async function loadBlogPosts() {
   try {
-    const response = await fetch("/.netlify/functions/get-content?type=blog");
-    if (response.ok) {
-      const blogPosts = await response.json();
-      return blogPosts;
-    }
-  } catch (error) {
-    console.warn("Failed to fetch blog posts from Netlify function:", error);
+    const posts = Object.entries(blogFiles).map(([path, fileContent]) =>
+      parseMarkdown(fileContent, path)
+    );
+    return posts;
+  } catch (err) {
+    console.warn(
+      "Failed to load markdown blog posts. Using static fallback.",
+      err
+    );
+    return staticBlog;
   }
-  return staticBlog;
 }
 
-// ✅ LOAD BOOKS (fallback)
+// Books
 export async function loadBooks() {
   try {
-    const response = await fetch("/.netlify/functions/get-content?type=books");
-    if (response.ok) {
-      const books = await response.json();
-      return books;
-    }
-  } catch (error) {
-    console.warn("Failed to fetch books from Netlify function:", error);
+    const books = Object.entries(bookFiles).map(([path, fileContent]) =>
+      parseMarkdown(fileContent, path)
+    );
+    return books;
+  } catch (err) {
+    console.warn("Failed to load markdown books. Using static fallback.", err);
+    return staticBooks;
   }
-  return staticBooks;
 }
 
-// ✅ GET SINGLE ARTICLE BY ID
-export function getArticleById(id) {
-  const articles = loadArticles();
-  return articles.find((article) => article.id === id);
+// Get one item by ID
+export async function getArticleById(id) {
+  const articles = await loadArticles();
+  return articles.find((a) => a.id === parseInt(id));
 }
 
-// ✅ GET SINGLE BLOG POST BY ID
 export async function getBlogPostById(id) {
-  const blogPosts = await loadBlogPosts();
-  return blogPosts.find((post) => post.id === parseInt(id));
+  const posts = await loadBlogPosts();
+  return posts.find((p) => p.id === parseInt(id));
 }
 
-// ✅ GET SINGLE BOOK BY ID
 export async function getBookById(id) {
   const books = await loadBooks();
-  return books.find((book) => book.id === parseInt(id));
+  return books.find((b) => b.id === parseInt(id));
 }
