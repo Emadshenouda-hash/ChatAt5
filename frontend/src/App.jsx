@@ -49,7 +49,7 @@ import {
   getArticleById,
   getBlogPostById,
   getBookById,
-} from "./utils/contentLoader.js";
+} from "./lib/contentLoader.js";
 
 import "./App.css";
 import "./animations.css";
