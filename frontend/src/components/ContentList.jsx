@@ -1,35 +1,37 @@
-import React from 'react'
-import { Calendar, User, ArrowRight } from 'lucide-react'
-import { Button } from '@/components/ui/button.jsx'
+import React from "react";
+import { Calendar, User, ArrowRight } from "lucide-react";
+import { Button } from "@/components/ui/button.jsx";
 
-function ContentList({ items, language, type = 'article' }) {
+function ContentList({ items, language, type = "article" }) {
   if (!items || items.length === 0) {
     return (
       <div className="text-center py-12">
         <p className="text-gray-500">
-          {language === 'ar' ? 'لا توجد عناصر متاحة حالياً' : 'No items available at the moment'}
+          {language === "ar"
+            ? "لا توجد عناصر متاحة حالياً"
+            : "No items available at the moment"}
         </p>
       </div>
-    )
+    );
   }
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
       {items.map((item) => {
         const title =
-          typeof item.title === 'object'
-            ? item.title?.[language] || item.title?.en || 'Untitled'
-            : item.title || 'Untitled'
+          typeof item.title === "object"
+            ? item.title?.[language] || item.title?.en || "Untitled"
+            : item.title || "Untitled";
 
         const excerpt =
-          typeof item.excerpt === 'object'
-            ? item.excerpt?.[language] || item.excerpt?.en || ''
-            : item.excerpt || ''
+          typeof item.excerpt === "object"
+            ? item.excerpt?.[language] || item.excerpt?.en || ""
+            : item.excerpt || "";
 
         const description =
-          typeof item.description === 'object'
-            ? item.description?.[language] || item.description?.en || ''
-            : item.description || ''
+          typeof item.description === "object"
+            ? item.description?.[language] || item.description?.en || ""
+            : item.description || "";
 
         return (
           <div
@@ -46,12 +48,12 @@ function ContentList({ items, language, type = 'article' }) {
                   onError={(e) => {
                     e.target.src = `https://via.placeholder.com/600x400/e5e7eb/6b7280?text=${encodeURIComponent(
                       title
-                    )}`
+                    )}`;
                   }}
                 />
                 {item.featured && (
                   <div className="absolute top-4 right-4 bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-medium">
-                    {language === 'ar' ? 'مميز' : 'Featured'}
+                    {language === "ar" ? "مميز" : "Featured"}
                   </div>
                 )}
               </div>
@@ -62,14 +64,16 @@ function ContentList({ items, language, type = 'article' }) {
               {/* Category & Date */}
               <div className="flex items-center justify-between text-sm text-gray-500 mb-3">
                 {item.category && (
-                  <span className="bg-gray-100 px-2 py-1 rounded-full">{item.category}</span>
+                  <span className="bg-gray-100 px-2 py-1 rounded-full">
+                    {item.category}
+                  </span>
                 )}
                 {item.date && (
-                  <div className="flex items-center space-x-1">
+                  <div className="flex items-center gap-1">
                     <Calendar className="h-4 w-4" />
                     <span>
                       {new Date(item.date).toLocaleDateString(
-                        language === 'ar' ? 'ar-SA' : 'en-US'
+                        language === "ar" ? "ar-SA" : "en-US"
                       )}
                     </span>
                   </div>
@@ -77,10 +81,14 @@ function ContentList({ items, language, type = 'article' }) {
               </div>
 
               {/* Title */}
-              <h3 className="text-xl font-bold text-gray-900 mb-3 line-clamp-2">{title}</h3>
+              <h3 className="text-xl font-bold text-gray-900 mb-3 line-clamp-2">
+                {title}
+              </h3>
 
               {/* Description/Excerpt */}
-              <p className="text-gray-600 mb-4 line-clamp-3">{excerpt || description}</p>
+              <p className="text-gray-600 mb-4 line-clamp-3">
+                {excerpt || description}
+              </p>
 
               {/* Author */}
               {item.author && (
@@ -91,39 +99,40 @@ function ContentList({ items, language, type = 'article' }) {
               )}
 
               {/* Price (for books) */}
-              {type === 'book' && item.price && (
-                <div className="text-lg font-bold text-blue-600 mb-4">{item.price}</div>
+              {type === "book" && item.price && (
+                <div className="text-lg font-bold text-blue-600 mb-4">
+                  {item.price}
+                </div>
               )}
 
               {/* Action Button */}
               <Button
-                variant="outline"
-                className="w-full group"
+                className="w-full bg-blue-600 text-white hover:bg-blue-700 flex justify-center items-center gap-2 font-primary"
                 onClick={() => {
-                  window.location.href = `/${type}s/${item.id}`
+                  window.location.href = `/${type}s/${item.id}`;
                 }}
               >
-                <span className={language === 'ar' ? 'ml-2' : 'mr-2'}>
-                  {type === 'book'
-                    ? language === 'ar'
-                      ? 'عرض التفاصيل'
-                      : 'View Details'
-                    : language === 'ar'
-                    ? 'اقرأ المزيد'
-                    : 'Read More'}
+                <span>
+                  {type === "book"
+                    ? language === "ar"
+                      ? "عرض التفاصيل"
+                      : "View Details"
+                    : language === "ar"
+                    ? "اقرأ المزيد"
+                    : "Read More"}
                 </span>
                 <ArrowRight
-                  className={`h-4 w-4 group-hover:translate-x-1 transition-transform ${
-                    language === 'ar' ? 'rotate-180' : ''
+                  className={`h-4 w-4 transition-transform group-hover:translate-x-1 ${
+                    language === "ar" ? "rotate-180" : ""
                   }`}
                 />
               </Button>
             </div>
           </div>
-        )
+        );
       })}
     </div>
-  )
+  );
 }
 
-export default ContentList
+export default ContentList;
