@@ -1,21 +1,12 @@
-// src/pages/Articles.jsx
 import React, { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { LanguageContext } from "@/App";
 import { Button } from "@/components/ui/button";
 
-// Use Vite's glob to import all markdown articles
-const articlesGlob = import.meta.glob("/src/content/articles/*.md", {
+// Use Vite's import.meta.glob to dynamically import all Markdown articles.
+// This loads the frontmatter and HTML content directly.
+const articlesGlob = import.meta.glob("/src/data/articles/*.md", {
   eager: true,
-});
-
-// Normalize the data from the glob import and create an array of articles
-const allArticles = Object.entries(articlesGlob).map(([path, module]) => {
-  const slug = path.split("/").pop().replace(".md", "");
-  return {
-    slug,
-    ...module.frontmatter,
-  };
 });
 
 const Articles = () => {
@@ -24,49 +15,62 @@ const Articles = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Filter articles by the current language
-    const filteredArticles = allArticles.filter(
-      (article) => article.lang === language
-    );
-    setArticles(filteredArticles);
-    setLoading(false);
-  }, [language]);
+    try {
+      // Extract the articles from the glob import.
+      const allArticles = Object.entries(articlesGlob).map(([path, module]) => {
+        // Create a unique ID from the filename.
+        const id = path.split("/").pop().replace(".md", "");
+        return {
+          id,
+          // Extract data from the frontmatter.
+          ...module.frontmatter,
+        };
+      });
 
-  const pageT = t?.nav?.articles || { title: "Articles" };
-  const noArticlesText =
-    language === "en" ? "No articles available." : "لا توجد مقالات.";
+      // Filter articles based on the current language (using 'language' as per config.yml).
+      const filtered = allArticles.filter((a) => a.language === language);
+      setArticles(filtered);
+    } catch (err) {
+      console.error("Error loading articles:", err);
+      setArticles([]);
+    } finally {
+      setLoading(false);
+    }
+  }, [language]);
 
   return (
     <div className="min-h-screen py-12 bg-ivory-white">
       <div className="max-w-4xl mx-auto px-4">
-        <h1 className="text-4xl font-bold text-deep-plum mb-8 font-heading text-center">
-          {pageT.title}
+        <h1 className="text-4xl font-bold text-deep-plum mb-8 font-heading">
+          {t?.nav?.articles || "Articles"}
         </h1>
 
         {loading ? (
-          <div className="text-center">
-            <p className="text-gray-600 font-primary">
-              {language === "en" ? "Loading..." : "جاري التحميل..."}
-            </p>
-          </div>
+          <p>{language === "en" ? "Loading..." : "جاري التحميل..."}</p>
         ) : articles.length === 0 ? (
-          <p className="text-center text-gray-500 font-primary">
-            {noArticlesText}
+          <p>
+            {language === "en" ? "No articles available." : "لا توجد مقالات."}
           </p>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {articles.map((article) => (
               <div
-                key={article.slug}
+                key={article.id}
                 className="border border-gray-200 p-4 rounded-2xl shadow-md bg-white"
               >
-                <h2 className="text-2xl font-semibold text-deep-plum mb-2 font-heading">
-                  {article.title}
+                <h2 className="text-2xl font-semibold text-sky-teal font-heading">
+                  {/* The title from the frontmatter is used directly. */}
+                  {article.title || "Untitled"}
                 </h2>
-                <p className="text-gray-600 mb-4 font-primary">
-                  {article.description}
+                <p className="text-gray-600 mb-2 text-sm">
+                  {article.date || "Unknown date"} –{" "}
+                  {article.author || "Unknown"}
                 </p>
-                <Link to={`/articles/${article.slug}`}>
+                <p className="text-gray-800 font-primary mb-4">
+                  {/* Use the excerpt from the frontmatter, or a slice of the body as a fallback. */}
+                  {article.excerpt || article.body?.slice(0, 120) + "..."}
+                </p>
+                <Link to={`/articles/${article.id}`}>
                   <Button className="bg-serene-blue text-white hover:bg-deep-plum font-primary transition-all duration-300 shadow-md">
                     {language === "en" ? "Read More" : "اقرأ المزيد"}
                   </Button>

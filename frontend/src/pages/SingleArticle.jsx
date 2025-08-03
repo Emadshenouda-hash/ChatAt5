@@ -1,15 +1,14 @@
-// src/pages/SingleArticle.jsx
 import React, { useContext, useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { LanguageContext } from "@/App.jsx";
+import { LanguageContext } from "@/App";
 
-// Use Vite's glob to import all markdown articles
-const articlesGlob = import.meta.glob("/src/content/articles/*.md", {
+// Use Vite's glob again to load the articles, this time to find the specific one.
+const articlesGlob = import.meta.glob("/src/data/articles/*.md", {
   eager: true,
 });
 
 const SingleArticle = () => {
-  const { slug } = useParams();
+  const { id } = useParams();
   const { language } = useContext(LanguageContext);
   const navigate = useNavigate();
   const [article, setArticle] = useState(null);
@@ -17,21 +16,22 @@ const SingleArticle = () => {
 
   useEffect(() => {
     setLoading(true);
-    const articleModule = articlesGlob[`/src/content/articles/${slug}.md`];
+    // Find the article module based on the URL parameter 'id'.
+    const articleModule = articlesGlob[`/src/data/articles/${id}.md`];
 
-    if (!articleModule || articleModule.frontmatter.lang !== language) {
-      // If no article found or language doesn't match, redirect
+    // If the article is not found or the language doesn't match, redirect.
+    if (!articleModule || articleModule.frontmatter.language !== language) {
       navigate("/articles", { replace: true });
       return;
     }
 
-    const { frontmatter, html } = articleModule;
+    // Set the article data from the frontmatter and the HTML body.
     setArticle({
-      ...frontmatter,
-      content: html,
+      ...articleModule.frontmatter,
+      content: articleModule.body,
     });
     setLoading(false);
-  }, [slug, language, navigate]);
+  }, [id, language, navigate]);
 
   if (loading) {
     return (
@@ -45,7 +45,7 @@ const SingleArticle = () => {
   }
 
   if (!article) {
-    return null; // The navigate function handles the case where the article isn't found
+    return null; // Navigation handles the case where the article isn't found.
   }
 
   return (
@@ -55,14 +55,23 @@ const SingleArticle = () => {
           <h1 className="text-4xl font-bold text-deep-plum mb-4 font-heading">
             {article.title}
           </h1>
-          <p className="text-gray-600 mb-6 font-primary">
-            {article.description}
+          <p className="text-gray-600 mb-2 text-sm">
+            {article.date || "Unknown date"} – {article.author || "Unknown"}
           </p>
           <hr className="my-6" />
-          <div className="prose max-w-none">
-            {/* The HTML is already parsed from the glob import */}
-            <div dangerouslySetInnerHTML={{ __html: article.content }} />
-          </div>
+          {article.image && (
+            <div className="mb-6">
+              <img
+                src={article.image}
+                alt={article.title}
+                className="w-full h-auto rounded-xl shadow-md"
+              />
+            </div>
+          )}
+          <article
+            className="prose max-w-none"
+            dangerouslySetInnerHTML={{ __html: article.content }}
+          />
         </div>
       </div>
     </div>
