@@ -13,11 +13,8 @@ const firebaseConfig = {
   measurementId: import.meta.env.VITE_MEASUREMENT_ID,
 };
 
-const appId = import.meta.env.VITE_FIRESTORE_APP_ID;
-
 const Prayer = () => {
   const { language, t } = useContext(LanguageContext);
-
   const pageT = t?.cards?.prayer || {};
 
   return (
@@ -33,7 +30,6 @@ const Prayer = () => {
           language={language}
           t={t}
           firebaseConfig={firebaseConfig}
-          appId={appId}
         />
       </div>
     </div>

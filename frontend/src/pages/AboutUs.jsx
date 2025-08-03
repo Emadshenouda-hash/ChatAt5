@@ -3,12 +3,22 @@ import { LanguageContext } from "@/App.jsx"; // Reverted to the project alias fo
 
 // Firebase imports
 import { initializeApp } from "firebase/app";
-import {
-  getAuth,
-  signInWithCustomToken,
-  signInAnonymously,
-} from "firebase/auth";
+import { getAuth, signInAnonymously } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
+
+const firebaseConfig = {
+  apiKey: import.meta.env.VITE_API_KEY,
+  authDomain: import.meta.env.VITE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_APP_ID,
+  measurementId: import.meta.env.VITE_MEASUREMENT_ID,
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+getFirestore(app);
 
 const AboutUsPage = () => {
   const { language, t } = useContext(LanguageContext);
@@ -59,32 +69,10 @@ const AboutUsPage = () => {
   useEffect(() => {
     async function initFirebaseAndAuth() {
       try {
-        // Check for the global firebase config
-        const firebaseConfig =
-          typeof __firebase_config !== "undefined"
-            ? JSON.parse(__firebase_config)
-            : null;
-        if (!firebaseConfig) {
-          throw new Error("Firebase configuration not found.");
-        }
-
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        getFirestore(app); // Initialize Firestore
-
-        // Sign in anonymously or with a custom token
-        const initialAuthToken =
-          typeof __initial_auth_token !== "undefined"
-            ? __initial_auth_token
-            : null;
-        if (initialAuthToken) {
-          await signInWithCustomToken(auth, initialAuthToken);
-        } else {
-          await signInAnonymously(auth);
-        }
+        await signInAnonymously(auth);
         setFirebaseReady(true);
       } catch (err) {
-        console.error("Firebase initialization or authentication error:", err);
+        console.error("Firebase authentication error:", err);
         setError(pageT.error);
       }
     }

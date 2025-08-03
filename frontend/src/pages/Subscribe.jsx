@@ -3,19 +3,15 @@ import React, { useContext } from "react";
 import { LanguageContext } from "@/App";
 import SubscriptionForm from "@/components/SubscriptionForm.jsx";
 
-// Firebase Configuration - REPLACE THESE WITH YOUR OWN VALUES
-// You can get these from your Firebase project settings
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_AUTH_DOMAIN",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_STORAGE_BUCKET",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  appId: "YOUR_APP_ID",
+  apiKey: import.meta.env.VITE_API_KEY,
+  authDomain: import.meta.env.VITE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_APP_ID,
+  measurementId: import.meta.env.VITE_MEASUREMENT_ID,
 };
-
-// Application ID (used for Firestore collections)
-const appId = "YOUR_APP_ID_FOR_FIRESTORE";
 
 const Subscribe = () => {
   const { language, t } = useContext(LanguageContext);
@@ -49,7 +45,6 @@ const Subscribe = () => {
           language={language}
           t={t}
           firebaseConfig={firebaseConfig}
-          appId={appId}
         />
       </div>
     </div>
