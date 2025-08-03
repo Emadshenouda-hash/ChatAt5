@@ -1,78 +1,59 @@
-import React, { useContext, useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+// src/pages/SingleArticle.jsx
+import React, { useEffect, useState, useContext } from "react";
+import { useParams } from "react-router-dom";
+import { getArticleById } from "@/utils/contentLoader";
 import { LanguageContext } from "@/App";
-
-// Use Vite's glob again to load the articles, this time to find the specific one.
-const articlesGlob = import.meta.glob("/src/data/articles/*.md", {
-  eager: true,
-});
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 const SingleArticle = () => {
   const { id } = useParams();
   const { language } = useContext(LanguageContext);
-  const navigate = useNavigate();
   const [article, setArticle] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setLoading(true);
-    // Find the article module based on the URL parameter 'id'.
-    const articleModule = articlesGlob[`/src/data/articles/${id}.md`];
-
-    // If the article is not found or the language doesn't match, redirect.
-    if (!articleModule || articleModule.frontmatter.language !== language) {
-      navigate("/articles", { replace: true });
-      return;
-    }
-
-    // Set the article data from the frontmatter and the HTML body.
-    setArticle({
-      ...articleModule.frontmatter,
-      content: articleModule.body,
-    });
-    setLoading(false);
-  }, [id, language, navigate]);
+    const fetchArticle = async () => {
+      setLoading(true);
+      const data = await getArticleById(id);
+      if (data) setArticle(data);
+      setLoading(false);
+    };
+    fetchArticle();
+  }, [id]);
 
   if (loading) {
     return (
-      <div className="min-h-screen py-12 bg-ivory-white flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin h-12 w-12 border-4 border-deep-plum border-t-transparent rounded-full mx-auto mb-4" />
-          <p className="text-gray-600">Loading...</p>
-        </div>
-      </div>
+      <p className="p-6 text-center text-lg">
+        {language === "en" ? "Loading..." : "جاري التحميل..."}
+      </p>
     );
   }
 
   if (!article) {
-    return null; // Navigation handles the case where the article isn't found.
+    return (
+      <p className="p-6 text-center text-lg text-gray-500">
+        {language === "en" ? "Article not found." : "المقال غير موجود."}
+      </p>
+    );
   }
 
   return (
-    <div className="min-h-screen py-12 bg-ivory-white">
-      <div className="max-w-4xl mx-auto px-4">
-        <div className="bg-white rounded-2xl shadow-lg p-8">
-          <h1 className="text-4xl font-bold text-deep-plum mb-4 font-heading">
-            {article.title}
-          </h1>
-          <p className="text-gray-600 mb-2 text-sm">
-            {article.date || "Unknown date"} – {article.author || "Unknown"}
-          </p>
-          <hr className="my-6" />
-          {article.image && (
-            <div className="mb-6">
-              <img
-                src={article.image}
-                alt={article.title}
-                className="w-full h-auto rounded-xl shadow-md"
-              />
-            </div>
-          )}
-          <article
-            className="prose max-w-none"
-            dangerouslySetInnerHTML={{ __html: article.content }}
-          />
-        </div>
+    <div className="max-w-3xl mx-auto p-6 bg-white rounded-xl shadow-lg my-12">
+      <h1 className="text-3xl font-bold font-heading text-deep-plum mb-4">
+        {article.title?.[language] || article.title}
+      </h1>
+      <p className="text-gray-600 text-sm mb-4">
+        {article.date} – {article.author}
+      </p>
+      {/*
+        Using ReactMarkdown to safely render the article content from the fetched Markdown.
+        The `remarkGfm` plugin adds support for GitHub Flavored Markdown (tables, task lists, etc.).
+      */}
+      <div className="prose max-w-none font-primary">
+        <ReactMarkdown remarkPlugins={[remarkGfm]}>
+          {article.content}
+        </ReactMarkdown>
       </div>
     </div>
   );
