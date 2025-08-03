@@ -4,7 +4,6 @@ import {
   Routes,
   Route,
   useParams,
-  useNavigate,
   Link,
 } from "react-router-dom";
 import { Button } from "./components/ui/button.jsx";
@@ -22,8 +21,8 @@ import {
   Instagram,
   Youtube,
 } from "lucide-react";
-import ContentList from "./components/ContentList.jsx";
-import ContentDetail from "./components/ContentDetail.jsx";
+
+// Import components
 import DynamicContentList from "./components/DynamicContentList.jsx";
 import DynamicContentDetail from "./components/DynamicContentDetail.jsx";
 import PrayerRequestForm from "./components/PrayerRequestForm.jsx";
@@ -479,76 +478,59 @@ function HomePage({ t }) {
           <div className="w-full h-full bg-soft-rose rounded-full"></div>
         </div>
 
-        <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
-          <div className="animate-fade-in-up">
-            <h1 className="text-3xl md:text-5xl font-bold mb-4 font-hero leading-tight">
-              <span className="text-spiritual-gradient animate-typewriter inline-block">
-                {t.title}
-              </span>
-            </h1>
-
-            <p className="text-xl md:text-2xl text-gray-700 mb-8 max-w-3xl mx-auto font-primary leading-relaxed animate-slide-in-left">
-              {t.subtitle}
-            </p>
-
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto font-primary leading-relaxed animate-slide-in-right">
-              {t.description}
-            </p>
-          </div>
+        <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center text-deep-plum">
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold font-hero animate-fade-in-down">
+            {t.title}
+          </h1>
+          <p className="mt-4 text-xl sm:text-2xl font-semibold font-heading animate-fade-in-up">
+            {t.subtitle}
+          </p>
+          <p className="mt-6 text-lg max-w-2xl mx-auto font-primary animate-fade-in-up delay-1">
+            {t.description}
+          </p>
+          <Link
+            to="/subscribe"
+            className="mt-8 inline-block px-8 py-3 bg-serene-blue text-white font-bold rounded-full shadow-lg hover:bg-gold-amber transform transition-transform hover:scale-105 animate-pop-in"
+          >
+            {t.cta.button}
+          </Link>
         </div>
       </section>
 
       {/* Feature Cards Section */}
-      <section className="py-20 bg-gradient-to-b from-white to-ivory-white">
+      <section className="py-12 lg:py-20 bg-ivory-white">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {cards.map((card, index) => {
+          <div className="text-center">
+            <h2 className="text-3xl font-bold text-deep-plum font-heading">
+              Our Compassionate Spaces
+            </h2>
+            <p className="mt-2 text-gray-600 font-primary">
+              Where faith and community intersect.
+            </p>
+          </div>
+
+          <div className="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {cards.map((card) => {
               const IconComponent = card.icon;
               return (
                 <Link
                   key={card.title}
                   to={card.href}
-                  className={`group glassmorphism p-8 hover-lift hover-spiritual-glow hover-glassmorphism transition-all duration-500 block relative overflow-hidden animate-fade-in-up card-${
-                    index + 1
-                  }`}
+                  className="block bg-white p-6 rounded-xl shadow-lg border border-gray-200 hover:shadow-xl transform transition-transform hover:scale-105 group"
                 >
-                  {/* Gradient Background */}
-                  <div
-                    className={`absolute inset-0 bg-gradient-to-br ${card.color} opacity-0 group-hover:opacity-10 rounded-2xl transition-opacity duration-500`}
-                  ></div>
-
-                  {/* Icon */}
-                  <div
-                    className={`inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br ${card.color} rounded-xl mb-6 group-hover:scale-110 transition-transform duration-500 animate-icon-pop animate-spiritual-glow`}
-                  >
-                    <IconComponent className="h-8 w-8 text-white" />
+                  <div className="flex items-center space-x-4">
+                    <div
+                      className={`p-3 rounded-full text-white bg-gradient-to-br ${card.color} transition-all duration-300 transform group-hover:scale-110`}
+                    >
+                      <IconComponent className="h-6 w-6" />
+                    </div>
+                    <h3 className="text-xl font-semibold text-deep-plum font-heading group-hover:text-serene-blue transition-colors">
+                      {card.title}
+                    </h3>
                   </div>
-
-                  {/* Content */}
-                  <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-serene-blue transition-colors font-heading">
-                    {card.title}
-                  </h3>
-                  <p className="text-gray-600 leading-relaxed font-primary">
+                  <p className="mt-4 text-gray-700 font-primary">
                     {card.description}
                   </p>
-
-                  {/* Arrow with Enhanced Animation */}
-                  <div className="mt-6 flex items-center text-sm font-medium text-gray-400 group-hover:text-serene-blue transition-colors font-primary">
-                    <span className="mr-2">Learn more</span>
-                    <svg
-                      className="w-4 h-4 group-hover:translate-x-2 group-hover:scale-110 transition-all duration-300"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M9 5l7 7-7 7"
-                      />
-                    </svg>
-                  </div>
                 </Link>
               );
             })}
@@ -556,68 +538,23 @@ function HomePage({ t }) {
         </div>
       </section>
 
-      {/* Call to Action Section */}
-      <section className="py-20 bg-spiritual-gradient animate-divine-radiance relative overflow-hidden">
-        {/* Floating Elements */}
-        <div className="absolute top-10 right-20 w-20 h-20 opacity-10 animate-parallax-float"></div>
-        <div className="absolute bottom-10 left-20 w-16 h-16 opacity-10 animate-cross-rotate"></div>
-
-        <div className="relative mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 text-center">
-          <div className="animate-fade-in-up">
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-6 font-hero leading-tight">
-              {t.cta.title}
-            </h2>
-            <p className="text-xl text-sky-teal/90 mb-8 font-primary leading-relaxed">
-              {t.cta.description}
-            </p>
-            <Button
-              size="lg"
-              className="bg-white text-serene-blue hover:bg-ivory-white hover:text-deep-plum font-semibold px-8 py-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 animate-spiritual-glow hover-scale font-primary"
-            >
-              {t.cta.button}
-            </Button>
-          </div>
+      {/* CTA Section */}
+      <section className="bg-spiritual-gradient py-12 lg:py-20">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className="text-3xl font-bold text-white font-heading animate-fade-in-down">
+            {t.cta.title}
+          </h2>
+          <p className="mt-4 text-lg text-gray-200 max-w-3xl mx-auto font-primary animate-fade-in-up">
+            {t.cta.description}
+          </p>
+          <Link
+            to="/subscribe"
+            className="mt-8 inline-block px-8 py-3 bg-white text-serene-blue font-bold rounded-full shadow-lg hover:bg-ivory-white transform transition-transform hover:scale-105 animate-pop-in delay-1"
+          >
+            {t.cta.button}
+          </Link>
         </div>
       </section>
-    </div>
-  );
-}
-
-// Content Detail Page Component
-function ContentDetailPage({ t, data, type }) {
-  const { slug } = useParams();
-  const navigate = useNavigate();
-  const content = data.find((item) => item.slug === slug);
-
-  if (!content) {
-    return <div className="text-center py-20">Content not found.</div>;
-  }
-
-  return (
-    <div className="min-h-screen bg-ivory-white py-12">
-      <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-        <Button
-          onClick={() => navigate(-1)}
-          className="mb-8 bg-serene-blue hover:bg-deep-plum text-white font-primary"
-        >
-          &larr; Back to {type}
-        </Button>
-        <h1 className="text-4xl font-bold text-deep-plum mb-6 font-heading">
-          {content.title}
-        </h1>
-        <p className="text-gray-700 text-lg mb-8 font-primary leading-relaxed">
-          {content.author}
-        </p>
-        <img
-          src={content.image}
-          alt={content.title}
-          className="w-full h-64 object-cover rounded-lg mb-8 shadow-lg"
-        />
-        <div
-          className="prose prose-lg max-w-none text-gray-800 font-primary leading-relaxed"
-          dangerouslySetInnerHTML={{ __html: content.fullText }}
-        />
-      </div>
     </div>
   );
 }
@@ -627,22 +564,54 @@ function App() {
   const [language, setLanguage] = useState("en");
   const t = translations[language];
 
+  // Wrapper component to handle data fetching for dynamic content detail pages
+  const DynamicContentDetailWrapper = ({ type, getFunction }) => {
+    const { id } = useParams();
+    const [content, setContent] = useState(null);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+      setLoading(true);
+      const data = getFunction(id);
+      setContent({ ...data, type });
+      setLoading(false);
+    }, [id, getFunction, type]);
+
+    if (loading) {
+      return (
+        <div className="min-h-screen bg-ivory-white py-12 text-center">
+          <p>Loading...</p>
+        </div>
+      );
+    }
+
+    if (!content) {
+      return (
+        <div className="min-h-screen bg-ivory-white py-12 text-center">
+          <p>Content not found.</p>
+        </div>
+      );
+    }
+
+    return <DynamicContentDetail content={content} language={language} />;
+  };
+
   return (
     <LanguageContext.Provider value={{ language, setLanguage, t }}>
       <Router>
         <Header language={language} setLanguage={setLanguage} t={t} />
+
         <Routes>
           <Route path="/" element={<HomePage t={t} />} />
 
-          {/* Use the imported page components */}
+          {/* Dynamic content routes */}
           <Route path="/books" element={<Books />} />
           <Route
             path="/books/:id"
             element={
-              <DynamicContentDetail
+              <DynamicContentDetailWrapper
                 type="Books"
                 getFunction={getBookById}
-                language={language}
               />
             }
           />
@@ -651,10 +620,9 @@ function App() {
           <Route
             path="/articles/:id"
             element={
-              <DynamicContentDetail
+              <DynamicContentDetailWrapper
                 type="Articles"
                 getFunction={getArticleById}
-                language={language}
               />
             }
           />
@@ -663,10 +631,9 @@ function App() {
           <Route
             path="/blog/:id"
             element={
-              <DynamicContentDetail
+              <DynamicContentDetailWrapper
                 type="Blog"
                 getFunction={getBlogPostById}
-                language={language}
               />
             }
           />

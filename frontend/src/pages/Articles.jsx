@@ -5,6 +5,16 @@ import { loadArticles } from "@/utils/contentLoader";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 
+// Utility function to remove frontmatter from content
+const removeFrontmatter = (content) => {
+  if (!content) return "";
+  const match = content.match(/---\n[\s\S]*?\n---/);
+  if (match) {
+    return content.replace(match[0], "").trim();
+  }
+  return content;
+};
+
 const Articles = () => {
   const { language, t } = useContext(LanguageContext);
   const [articles, setArticles] = useState([]);
@@ -53,10 +63,10 @@ const Articles = () => {
                 </p>
                 <p className="text-gray-800 font-primary mb-4">
                   {article.excerpt?.[language] ||
-                    article.content?.slice(0, 120) + "..."}
+                    removeFrontmatter(article.content)?.slice(0, 120) + "..."}
                 </p>
                 <Link to={`/articles/${article.id}`}>
-                  <Button className="bg-serene-blue text-white hover:bg-deep-plum font-primary">
+                  <Button className="bg-serene-blue text-white hover:bg-deep-plum font-primary transition-all duration-300 shadow-md">
                     {language === "en" ? "Read More" : "اقرأ المزيد"}
                   </Button>
                 </Link>

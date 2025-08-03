@@ -1,6 +1,5 @@
 import React from "react";
 import { Calendar, User, ArrowRight } from "lucide-react";
-import { Button } from "@/components/ui/button.jsx";
 
 function ContentList({ items, language, type = "article" }) {
   if (!items || items.length === 0) {
@@ -36,11 +35,11 @@ function ContentList({ items, language, type = "article" }) {
         return (
           <div
             key={item.id}
-            className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-2xl transition-all duration-300 hover:-translate-y-2"
+            className="bg-white rounded-xl shadow border border-gray-200 overflow-hidden hover:shadow-lg transition-all"
           >
             {/* Image */}
             {item.image && (
-              <div className="aspect-video bg-gray-200 relative overflow-hidden">
+              <div className="aspect-video bg-gray-100 overflow-hidden">
                 <img
                   src={item.image}
                   alt={title}
@@ -51,25 +50,18 @@ function ContentList({ items, language, type = "article" }) {
                     )}`;
                   }}
                 />
-                {item.featured && (
-                  <div className="absolute top-4 right-4 bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-medium">
-                    {language === "ar" ? "مميز" : "Featured"}
-                  </div>
-                )}
               </div>
             )}
 
-            {/* Content */}
             <div className="p-6">
-              {/* Category & Date */}
-              <div className="flex items-center justify-between text-sm text-gray-500 mb-3">
+              <div className="flex justify-between text-sm text-gray-500 mb-3">
                 {item.category && (
                   <span className="bg-gray-100 px-2 py-1 rounded-full">
                     {item.category}
                   </span>
                 )}
                 {item.date && (
-                  <div className="flex items-center gap-1">
+                  <div className="flex items-center space-x-1">
                     <Calendar className="h-4 w-4" />
                     <span>
                       {new Date(item.date).toLocaleDateString(
@@ -80,17 +72,14 @@ function ContentList({ items, language, type = "article" }) {
                 )}
               </div>
 
-              {/* Title */}
-              <h3 className="text-xl font-bold text-gray-900 mb-3 line-clamp-2">
+              <h3 className="text-xl font-bold text-gray-900 mb-2 line-clamp-2">
                 {title}
               </h3>
 
-              {/* Description/Excerpt */}
-              <p className="text-gray-600 mb-4 line-clamp-3">
+              <p className="text-gray-700 mb-4 line-clamp-3">
                 {excerpt || description}
               </p>
 
-              {/* Author */}
               {item.author && (
                 <div className="flex items-center text-sm text-gray-500 mb-4">
                   <User className="h-4 w-4 mr-1" />
@@ -98,16 +87,9 @@ function ContentList({ items, language, type = "article" }) {
                 </div>
               )}
 
-              {/* Price (for books) */}
-              {type === "book" && item.price && (
-                <div className="text-lg font-bold text-blue-600 mb-4">
-                  {item.price}
-                </div>
-              )}
-
-              {/* Action Button */}
-              <Button
-                className="w-full bg-blue-600 text-white hover:bg-blue-700 flex justify-center items-center gap-2 font-primary"
+              {/* 🔥 FIXED Button: Tailwind only */}
+              <button
+                className="flex w-full items-center justify-center gap-2 border border-serene-blue text-serene-blue hover:bg-serene-blue hover:text-white py-2 px-4 rounded-md transition-all"
                 onClick={() => {
                   window.location.href = `/${type}s/${item.id}`;
                 }}
@@ -122,11 +104,11 @@ function ContentList({ items, language, type = "article" }) {
                     : "Read More"}
                 </span>
                 <ArrowRight
-                  className={`h-4 w-4 transition-transform group-hover:translate-x-1 ${
+                  className={`h-4 w-4 transition-transform ${
                     language === "ar" ? "rotate-180" : ""
                   }`}
                 />
-              </Button>
+              </button>
             </div>
           </div>
         );
