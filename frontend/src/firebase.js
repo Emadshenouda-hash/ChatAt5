@@ -8,40 +8,46 @@ import {
 import { getFirestore } from "firebase/firestore";
 
 // The Firebase configuration is provided by the environment.
-const firebaseConfig = JSON.parse(
-  typeof __firebase_config !== "undefined" ? __firebase_config : "{}"
-);
-const appId = typeof __app_id !== "undefined" ? __app_id : "default-app-id";
-const initialAuthToken =
-  typeof __initial_auth_token !== "undefined" ? __initial_auth_token : null;
+const firebaseConfig = {
+  apiKey: import.meta.env.VITE_API_KEY,
+  authDomain: import.meta.env.VITE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_APP_ID,
+  measurementId: import.meta.env.VITE_MEASUREMENT_ID,
+};
 
-// Initialize Firebase App and services.
+// Check if Firebase is already initialized
 let app;
-let auth;
-let db;
-
-try {
-  app = initializeApp(firebaseConfig);
-  auth = getAuth(app);
-  db = getFirestore(app);
-
-  // Authenticate the user using the custom token if available, otherwise sign in anonymously.
-  async function authenticate() {
-    try {
-      if (initialAuthToken) {
-        await signInWithCustomToken(auth, initialAuthToken);
-      } else {
-        await signInAnonymously(auth);
-      }
-      console.log("Firebase authentication successful.");
-    } catch (error) {
-      console.error("Firebase authentication failed:", error);
-    }
+if (!app) {
+  try {
+    app = initializeApp(firebaseConfig);
+  } catch (error) {
+    console.error("Firebase initialization failed:", error);
   }
-
-  authenticate();
-} catch (error) {
-  console.error("Firebase initialization failed:", error);
 }
 
-export { app, auth, db, appId };
+// Initialize Firebase App and services.
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+// Authenticate the user. We will use anonymous auth as a fallback.
+async function authenticate() {
+  const initialAuthToken =
+    typeof __initial_auth_token !== "undefined" ? __initial_auth_token : null;
+  try {
+    if (initialAuthToken) {
+      await signInWithCustomToken(auth, initialAuthToken);
+    } else {
+      await signInAnonymously(auth);
+    }
+    console.log("Firebase authentication successful.");
+  } catch (error) {
+    console.error("Firebase authentication failed:", error);
+  }
+}
+
+authenticate();
+
+export { app, auth, db };
